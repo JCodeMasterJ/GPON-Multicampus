@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GPON Planner – USTA ↔ Telebucaramanga</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Tailwind (utility) via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+  <!-- HEADER / TOPBAR -->
+  <header class="site-header" id="top">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="Inicio">
+        <img src="assets/usta-logo.png" alt="USTA" class="brand-logo" />
+        <span class="brand-name">GPON Planner</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Principal">
+        <a href="#def" class="nav-link">Definición</a>
+        <a href="#topologia" class="nav-link">Topología</a>
+        <a href="#equipos" class="nav-link">Equipos</a>
+        <a href="#mapa" class="nav-link">Mapa & Distancias</a>
+        <a href="#sedes" class="nav-link">Sedes</a>
+        <a href="#presupuesto" class="nav-link">Presupuesto</a>
+      </nav>
+
+      <!-- Botón móvil -->
+      <button class="hamb" id="hamb" aria-label="Abrir menú">☰</button>
+    </div>
+
+    <!-- Menú móvil (se muestra al pulsar ☰) -->
+    <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil">
+      <a href="#def" class="nav-link">Definición</a>
+      <a href="#topologia" class="nav-link">Topología</a>
+      <a href="#equipos" class="nav-link">Equipos</a>
+      <a href="#mapa" class="nav-link">Mapa & Distancias</a>
+      <a href="#sedes" class="nav-link">Sedes</a>
+      <a href="#presupuesto" class="nav-link">Presupuesto</a>
+    </nav>
+  </header>
+
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+    <!-- Definición -->
+    <section id="def" class="neon-section">
+      <div class="neon-header">
+        <h1 class="neon-title">¿Qué es una red <span class="grad">GPON</span>?</h1>
+        <span class="neon-badge">Clase B+ · Presupuesto típico ≈ 28 dB</span>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <!-- Explicación breve y atractiva -->
+        <div class="neon-card space-y-4">
+          <p class="leading-relaxed">
+            <strong>GPON</strong> (<em>Gigabit Passive Optical Network</em>) es una autopista de <em>luz</em>
+            en topología <strong>punto-multipunto</strong>. Desde la central, un <strong>OLT</strong> envía la señal
+            por fibra hasta <strong>splitters pasivos</strong> que la bifurcan sin consumo eléctrico,
+            llegando a múltiples <strong>ONU/ONT</strong> en las sedes. Resultado: alta velocidad, baja latencia
+            y gran alcance con planta <em>pasiva</em> (cero energía en el campo).
+          </p>
+
+          <ul class="neon-bullets">
+            <li><span class="pill">Downstream 1490 nm</span> · <span class="pill">Upstream 1310 nm</span></li>
+            <li><span class="pill">Velocidad: 2.5 Gb/s ↓ · 1.25 Gb/s ↑</span></li>
+            <li><span class="pill">Split típico: 1:4 / 1:8 / 1:16 / 1:32</span></li>
+            <li><span class="pill">Pasivo en campo = alta confiabilidad</span></li>
+          </ul>
+
+          <!-- Línea “fibra” con glow -->
+          <svg viewBox="0 0 600 80" class="glow-svg">
+            <defs>
+              <linearGradient id="fiberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00E5FF" />
+                <stop offset="50%" stop-color="#7C3AED" />
+                <stop offset="100%" stop-color="#22D3EE" />
+              </linearGradient>
+            </defs>
+            <path d="M10,40 C120,10 240,70 360,40 C440,20 520,60 590,40" stroke="url(#fiberGrad)" stroke-width="4"
+              fill="none" class="glow-line" />
+          </svg>
+        </div>
+
+        <!-- Tarjetas técnicas OLT / ONU -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="neon-card">
+            <div class="card-title">
+              <!-- icono inline -->
+              <svg width="18" height="18" viewBox="0 0 24 24" class="icon">
+                <path fill="currentColor" d="M3 7h18v10H3zM5 9v6h14V9zM7 19h10v2H7z" />
+              </svg>
+              OLT · 1490 nm (↓)
+            </div>
+            <ul class="spec-list">
+              <li>Potencia lanzada: <strong>+1.5 a +5 dBm</strong></li>
+              <li>Sensibilidad mínima: <strong>−28 dBm</strong></li>
+              <li>Sobrecarga: <strong>−8 dBm</strong></li>
+            </ul>
+            <p class="hint">Alimenta el árbol óptico y define el <em>presupuesto</em> del downstream.</p>
+          </div>
+
+          <div class="neon-card">
+            <div class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" class="icon">
+                <path fill="currentColor" d="M4 7h16v10H4zM6 9v6h12V9z" />
+              </svg>
+              ONU/ONT · 1310 nm (↑)
+            </div>
+            <ul class="spec-list">
+              <li>Potencia lanzada: <strong>0.5 a +5 dBm</strong></li>
+              <li>Sensibilidad mínima: <strong>−27 dBm</strong></li>
+              <li>Sobrecarga: <strong>−8 dBm</strong></li>
+            </ul>
+            <p class="hint">Equipo de usuario/sede; transmite upstream hacia la central.</p>
+          </div>
+
+          <div class="neon-card sm:col-span-2">
+            <div class="card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" class="icon">
+                <path fill="currentColor" d="M12 5l7 7H5z" />
+              </svg>
+              Pérdidas de referencia (clase B+)
+            </div>
+            <div class="ref-grid">
+              <div><span class="pill">Fibra</span> 0.25 dB/km (1490) · 0.35 dB/km (1310)</div>
+              <div><span class="pill">Conector</span> ≈ 0.5 dB</div>
+              <div><span class="pill">Empalme</span> ≈ 0.1 dB</div>
+              <div><span class="pill">Splitter 1:4</span> ≈ 7.3 dB</div>
+              <div><span class="pill">1:8</span> ≈ 10.5 dB · <span class="pill">1:16</span> ≈ 13.5 dB · <span
+                  class="pill">1:32</span> ≈ 16.5 dB</div>
+            </div>
+            <p class="hint">La suma de pérdidas debe quedar <strong>&lt; 28 dB</strong> (más tu margen de diseño).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Topología + calculadora -->
+    <section id="topologia" class="space-y-4">
+      <h2 class="section-title">Topología &amp; presupuesto óptico</h2>
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="card">
+          <div class="font-medium mb-3">Calculadora (B+)</div>
+          <form id="linkForm" class="grid grid-cols-2 gap-3 text-sm">
+            <label class="col-span-2">Longitud del enlace (km)
+              <input id="km" type="number" step="0.001" class="input" value="5">
+            </label>
+            <label>Aten. fibra (dB/km ↓1490)
+              <input id="att1490" type="number" step="0.01" class="input" value="0.25">
+            </label>
+            <label>Aten. fibra (dB/km ↑1310)
+              <input id="att1310" type="number" step="0.01" class="input" value="0.35">
+            </label>
+            <label>Conectores (qty)
+              <input id="conns" type="number" class="input" value="4">
+            </label>
+            <label>Empalmes (qty)
+              <input id="splices" type="number" class="input" value="8">
+            </label>
+            <label>Splitter (dB)
+              <select id="splitLoss" class="input">
+                <option value="7.3">1:4 (7.3 dB)</option>
+                <option value="10.5" selected>1:8 (10.5 dB)</option>
+                <option value="13.5">1:16 (13.5 dB)</option>
+                <option value="16.5">1:32 (16.5 dB)</option>
+              </select>
+            </label>
+            <label>Margen objetivo (dB)
+              <input id="margin" type="number" step="0.1" class="input" value="3">
+            </label>
+            <div class="col-span-2 flex gap-2 mt-2">
+              <button type="button" id="btnCalc" class="btn">Restablecer</button>
+              <!-- dentro de la tarjeta de la calculadora, debajo del botón "Calcular" -->
+              <div id="calcOut" class="calc-result" aria-live="polite"></div>
+              <!-- <div id="resCalc" class="self-center text-sm"></div> -->
+            </div>
+          </form>
+        </div>
+        <div class="card">
+          <img src="assets/topologia.png" alt="Esquema GPON" class="w-full rounded-xl border"
+            onerror="this.style.display='none'">
+          <p class="text-xs text-slate-500 mt-2"><!-- DIAGRAMA / TOPOLOGÍA -->
+          <div class="card topo-card">
+            <div class="topo-header">
+              <h3 class="section-title !mb-0">Topología</h3>
+              <span class="section-kicker">Estrella (GPON)</span>
+            </div>
+
+            <p class="topo-sub">
+              Esquema lógico: <b>OLT → Splitter → ONT</b> en cada sede (estrella desde la central).
+            </p>
+
+            <!-- <div class="topo-canvas">
+              <svg id="starTopoSvg" viewBox="0 0 900 320" class="w-full h-full"></svg>
+            </div> -->
+            <!-- dentro de la tarjeta de Topología -->
+            <div class="topo-canvas">
+              <svg id="starTopoSvg" viewBox="0 0 900 420" role="img" aria-label="Topología GPON"></svg>
+            </div>
+
+          </div>
+          </svg>
+        </div>
+        </p>
+      </div>
+      </div>
+    </section>
+
+    <!-- Equipos -->
+
+    <section id="equipos" class="space-y-5">
+      <h2 class="section-title">
+        Equipos por nodo
+        <span class="section-kicker">edita o añade</span>
+      </h2>
+      <p class="text-slate-300 text-sm">Incluye OLT, ONT, splitters y ODF necesarios para la red.</p>
+
+      <div class="equipos-grid" id="equiposGrid"></div>
+
+      <button id="addEquipo" class="btn">➕ Añadir equipo</button>
+    </section>
+
+    <!-- Mapa -->
+    <section id="mapa" class="space-y-4">
+      <h2 class="section-title">Mapa interactivo y distancias</h2>
+      <p class="text-slate-300 text-sm">Doble‑clic para poner marcador del sitio seleccionado. Arrastre para ajustar.
+      </p>
+      <div class="grid lg:grid-cols-[1fr_360px] gap-6">
+        <div id="map"></div>
+        <div class="card space-y-3">
+          <div class="font-medium">Sitios</div>
+          <div id="sitesList" class="space-y-2 text-sm"></div>
+          <div class="border-t pt-3">
+            <div class="font-medium">Distancias & pérdidas</div>
+            <table class="w-full text-sm" id="distTable">
+              <thead>
+                <tr class="text-left">
+                  <th class="py-1">Tramo</th>
+                  <th>Dist (km)</th>
+                  <th>Pérdida ↓ (dB)</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <button id="clearAll" class="btn-danger">Borrar todo</button>
+        </div>
+      </div>
+      <div id="assignBox" class="text-sm text-slate-600"></div>
+      <div class="mt-2 text-sm text-slate-600">
+        <label class="mr-2">
+          <input id="covEnabled" type="checkbox" checked>
+          Mostrar zona de cobertura
+        </label>
+        <span class="mx-2">Radio:</span>
+        <input id="covRadius" type="range" min="100" max="3000" step="50" value="1000" class="align-middle">
+        <span id="covRadiusLabel">1000 m</span>
+      </div>
+
+    </section>
+    <!-- Sedes: fotos y componentes -->
+    <section id="sedes" class="space-y-4">
+      <h3 class="section-title">Selector de sede</h3>
+
+      <!-- Selector de sede -->
+      <div class="neon-card" style="padding:12px">
+        <label class="text-sm text-slate-300">Selecciona una sede</label>
+        <select id="siteSelect" class="input-eq" style="max-width:420px;margin-top:.35rem">
+          <option value="novena">USTA – Novena</option>
+          <option value="florida">USTA – Florida</option>
+          <option value="limonal">USTA – Limonal</option>
+          <option value="piedecuesta">USTA – Piedecuesta</option>
+        </select>
+      </div>
+
+      <!-- Fotos -->
+      <!-- <div class="neon-card">
+        <div class="topo-header">
+          <h3 class="card-title"><span class="icon">📷</span>Fotos de la sede</h3>
+          <span class="section-kicker">Hasta 4 imágenes por sede (URL)</span>
+        </div>
+
+        <div id="photosGrid" class="equipos-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:12px"></div>
+        <p class="hint" style="margin-top:.5rem">
+          Tip: pega URL públicas (Drive/Imgur/tu hosting). Si no tienes foto aún, deja el cuadro vacío.
+        </p>
+      </div> -->
+      <!-- GALERIA -->
+      <section id="sedesGaleria" class="neon-section">
+        <h3 class="section-title">Sedes • fotos</h3>
+        <p class="hint">Haz clic para seleccionar una sede.</p>
+        <div id="sedeGallery" class="sede-grid"></div> <!-- AQUÍ aparecen -->
+      </section>
+
+      <!-- Componentes por sede -->
+      <div class="neon-card">
+        <div class="topo-header">
+          <h3 class="card-title"><span class="icon">🧰</span>Componentes por sede</h3>
+          <span class="section-kicker">Listado rápido</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table id="siteCompTable" class="budget-table" style="min-width:720px;width:100%">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Valor</th>
+                <th>Marca</th>
+              </tr>
+            </thead>
+            <tbody><!-- render JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- Presupuesto -->
+    <section id="presupuesto" class="space-y-4">
+      <h2 class="section-title">Presupuesto</h2>
+      <div class="overflow-auto rounded-2xl bg-white shadow">
+        <table class="min-w-full text-sm" id="tablaBudget">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="p-2 text-left">Nombre del equipo</th>
+              <th class="p-2 text-left">Marca</th>
+              <th class="p-2 text-left">Valor (USD)</th>
+              <th class="p-2 text-left">Cantidad</th>
+              <th class="p-2 text-left">Descripción</th>
+              <th class="p-2 text-left">Características</th>
+              <th class="p-2 text-left">Subtotal</th>
+              <th class="p-2"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr class="font-semibold">
+              <td colspan="6" class="p-2 text-right">Total:</td>
+              <td class="p-2" id="totalUSD">$0</td>
+              <td class="p-2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="flex gap-2">
+        <button id="addRow" class="btn">Añadir ítem</button>
+        <button id="resetRows" class="btn-alt">Plantilla ejemplo</button>
+      </div>
+    </section>
+
+    <footer class="pt-10 pb-6 text-center text-xs text-slate-500">Hecho para curso de Redes Ópticas • Funciona local.
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
